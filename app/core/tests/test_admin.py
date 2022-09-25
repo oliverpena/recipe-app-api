@@ -16,7 +16,8 @@ class AdminSiteTests(TestCase):
         self.admin_user = get_user_model().objects.create_superuser(email='admintest@example.com', password='test123')
 
         self.client.force_login(self.admin_user)
-        self.user = get_user_model().objects.create_user(email='user@example.com', password='test1234', name='Test User')
+        self.user = get_user_model().objects.create_user(email='user@example.com',
+                                                         password='test1234', name='Test User')
         return super().setUp()
 
     def test_users_list(self):
