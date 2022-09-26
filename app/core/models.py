@@ -1,16 +1,18 @@
 """Database Models."""
 
-from django.conf import settings
 from typing import Union
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin)
+
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
     """Manager for users."""
 
     def create_user(self, email: str, password: Union[str, None] = None, **extra_fields):
+        """Create, save and return a new user."""
         if not email:
             raise ValueError('User must have an email address.')
         user: User = self.model(
@@ -20,6 +22,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email: str, password: Union[str, None] = None):
+        """Create and return a new superuser."""
         user = self.create_user(email, password)
         user.is_staff = True
         user.is_superuser = True
@@ -32,8 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=True)
-    models.FloatField()
+    is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
 
@@ -45,7 +47,7 @@ class Recipe(models.Model):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
