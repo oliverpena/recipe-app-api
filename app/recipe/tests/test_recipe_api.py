@@ -214,7 +214,7 @@ class PrivateRecipeApiTests(TestCase):
 
     def test_create_recipe_with_existing_tags(self):
         """Test creating a recipe with existing tag."""
-        tag_indian = Tag.objects.create(user=self.user, name='Indinan')
+        tag_indian = Tag.objects.create(user=self.user, name='Indian')
 
         payload = {
             'title': 'Pongal',
