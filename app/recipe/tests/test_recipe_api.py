@@ -370,6 +370,46 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(recipe.ingredients.count(), 0)
 
+    def test_filter_by_tags(self):
+        """Test filtering recipe by tags."""
+        recipe1 = create_recipe(user=self.user, title='Thai Vegtable Curry')
+        recipe2 = create_recipe(user=self.user, title='Aubergine with Tahini')
+        tag1 = Tag.objects.create(user=self.user, name='Vegan')
+        tag2 = Tag.objects.create(user=self.user, name='Vegetarian')
+        recipe1.tags.add(tag1)
+        recipe2.tags.add(tag2)
+        recipe3 = create_recipe(user=self.user, title='Fish and chips')
+
+        params = {'tags': f'{tag1.id},{tag2.id}'}
+        res = self.client.get(RECIPES_URL, params)
+
+        s1 = RecipeSerializer(recipe1)
+        s2 = RecipeSerializer(recipe2)
+        s3 = RecipeSerializer(recipe3)
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)
+
+    def test_filter_by_ingredients(self):
+        """Test filtering recipe by ingredients."""
+        recipe1 = create_recipe(user=self.user, title='Posh Beans on Toast')
+        recipe2 = create_recipe(user=self.user, title='Chicken Cacciatore')
+        ing1 = Ingredient.objects.create(user=self.user, name='Feta Cheese')
+        ing2 = Ingredient.objects.create(user=self.user, name='Chicken')
+        recipe1.ingredients.add(ing1)
+        recipe2.ingredients.add(ing2)
+        recipe3 = create_recipe(user=self.user, title='Red Lentil Daal')
+
+        params = {'ingredients': f'{ing1.id},{ing2.id}'}
+        res = self.client.get(RECIPES_URL, params)
+
+        s1 = RecipeSerializer(recipe1)
+        s2 = RecipeSerializer(recipe2)
+        s3 = RecipeSerializer(recipe3)
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)
+
 
 class ImageUploadTests(TestCase):
     """Tests for the image upload API."""
